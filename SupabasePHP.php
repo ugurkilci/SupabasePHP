@@ -145,4 +145,42 @@ class SupabasePHP {
         return $response;
     }
 
+    /**
+     * Read data from the specified table using the given criteria.
+     *
+     * @param string $tableName The name of the table from which data will be read.
+     * @param string $where [Optional] The query parameters for filtering the data (default is "*").
+     * @param string $range [Optional] The range header to limit the number of results (e.g., "0-9", "10-19").
+     * @return string The response from the API after performing the read operation.
+     */
+    public function read($tableName, $where = "*", $range = "") {
+        $url = $this->apiUrl . '/rest/v1/' . $tableName . '?select=' . $where;
+
+        // If the $where parameter does not start with "*", it means specific query parameters are provided.
+        // In that case, update the API URL with the provided table name and query parameters.
+        if (substr($where, 0, 1) != "*") {
+            $url = $this->apiUrl . '/rest/v1/' . $tableName . '?select=' . $where;
+        }
+
+        // Prepare the header information for the API request.
+        $headers = array(
+            'apikey: ' . $this->apiKey,
+            'Authorization: Bearer ' . $this->apiKey,
+            'Range: ' . @$range
+        );
+
+        // Initialize cURL session.
+        $ch = curl_init($url);
+
+        // Set cURL options.
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return response instead of outputting
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // Set headers
+
+        // Execute cURL session and get the response.
+        $response = curl_exec($ch);
+
+        // Return the API response.
+        return $response;
+    }
+
 }
