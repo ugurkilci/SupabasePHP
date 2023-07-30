@@ -68,7 +68,7 @@ class SupabasePHP {
         // Create a new array for building "eq" (equal) filter parameters for the update operation.
         $queryParams = array();
         foreach ($where as $key => $value) {
-            $queryParams[$key] = 'eq.' . $value;
+            $queryParams[$key] = $filter . '.' . $value;
         }
         
         // Convert the array to query string parameters.
