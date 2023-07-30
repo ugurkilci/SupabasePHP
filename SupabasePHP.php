@@ -101,4 +101,48 @@ class SupabasePHP {
         return $response;
     }
 
+    /**
+     * Delete data from the specified table using the given criteria.
+     *
+     * @param string $tableName The name of the table from which data will be deleted.
+     * @param array $where An associative array specifying the filter criteria for the delete operation.
+     * @param string $filter [Optional] The filter type to use for the delete operation (default is "eq").
+     * @return string The response from the API after performing the delete operation.
+     */
+    public function delete($tableName, $where, $filter = "eq") {
+        // Create a new array for building "eq" (equal) filter parameters for the delete operation.
+        $queryParams = array();
+        foreach ($where as $key => $value) {
+            $queryParams[$key] = $filter . '.' . $value;
+        }
+
+        // Convert the array to query string parameters.
+        $queryString = http_build_query($queryParams);
+
+        // Build the API URL for the delete operation with the provided table name and query parameters.
+        $url = $this->apiUrl . '/rest/v1/' . $tableName . '?' . $queryString;
+
+        // Prepare the header information for the API request.
+        $headers = array(
+            'apikey: ' . $this->apiKey,
+            'Authorization: Bearer ' . $this->apiKey,
+            'Content-Type: application/json',
+            'Prefer: return=minimal',
+        );
+
+        // Initialize cURL session and set options for the request.
+        $ch = curl_init(); // Initialize cURL
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Perform the cURL request to the API and capture the response.
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        // Return the API response.
+        return $response;
+    }
+
 }
